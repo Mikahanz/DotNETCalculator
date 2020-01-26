@@ -13,7 +13,7 @@ namespace Calculator
     public partial class Form1 : Form
     {
 
-        public delegate decimal calculator(decimal firstNum, decimal secondNum);
+        //public delegate decimal calculator(decimal firstNum, decimal secondNum);
 
         static decimal Addition(decimal fNum, decimal sNum)
         {
@@ -62,94 +62,100 @@ namespace Calculator
 
         private void btnOne_Click(object sender, EventArgs e)
         {
+            
             if (sender is Button)
             {
                 Button b = sender as Button;
                 if (b != null)
                 {
-                    tbxMain.Text += b.Text;
-                    tbxDisplay.Text += b.Text;
+                    if(tbxMain.Text == "0" || isOperatorPressed)
+                    {
+                        tbxMain.Clear();
+                    }
+
+                    isOperatorPressed = false;
+
+                    if(b.Text == ".")
+                    {
+                        if (!tbxMain.Text.Contains("."))
+                        {
+                            tbxMain.Text += b.Text;
+                            tbxDisplay.Text += b.Text;
+                        }
+                    }
+                    else
+                    {
+                        tbxMain.Text += b.Text;
+                        tbxDisplay.Text += b.Text;
+                    }
+
+                    
+                    
                 }
             }
+
+            // Another way to the get the button sender
+            //Button button = (Button)sender;
+            //tbxMain.Text = button.Text;
         }
 
-        decimal fNumber = 0;
-        decimal sNumber = 0;
-        decimal totalResult = 0;
-        int btnCounter = 0;
+        
+        decimal totalResult = 0;        
         string opeRator = "";
+        bool isOperatorPressed = false;
+
         private void btnMultiply_Click(object sender, EventArgs e)
         {
-            
-            bool toggle = true;
-
-            if (toggle & btnCounter == 0)
-            {
-                fNumber = Convert.ToDecimal(tbxMain.Text);
-                toggle = false;
-            }            
-            
-            btnCounter++;
-
+           
             if (sender is Button)
             {
                 Button b = sender as Button;
                 if (b != null)
                 {
-//                    tbxDisplay.Text += tbxMain.Text;
-                    tbxDisplay.Text += b.Text ;
 
-                    
-                    
-                    if(btnCounter == 2)
+                    if(totalResult != 0)
                     {
-                        sNumber = Convert.ToDecimal(tbxMain.Text);
+                        btnEqual.PerformClick();
+                        opeRator = b.Text;
+                        tbxDisplay.Text += b.Text;
+                        isOperatorPressed = true;
+                        //tbxMain.Clear();
 
-                        switch(b.Text)
-                        {
-                            case "*":
-                                totalResult = Multiplication(fNumber, sNumber);
-                                break;
-                            case "/":
-                                totalResult = Division(fNumber, sNumber);
-                                break;
-                            case "+":
-                                totalResult = Addition(fNumber, sNumber);
-                                break;
-                            case "-":
-                                totalResult = Subtraction(fNumber, sNumber);
-                                break;
-
-                        }
-
-                        tbxSecondary.Text = Convert.ToString(totalResult);
-                        fNumber = totalResult;
-                        btnCounter = 1;
-                        sNumber = 0;
                     }
+                    else
+                    {
+                        opeRator = b.Text;
+
+                        totalResult = Convert.ToDecimal(tbxMain.Text);
+                        tbxDisplay.Text += b.Text;
+                        isOperatorPressed = true;
+                        tbxMain.Clear();
+
+                    }
+
+
                 }
-                opeRator = b.Text;
+                
             }
 
-            tbxMain.Clear();
+            
             
         }
 
         private void btnClear_Click(object sender, EventArgs e)
         {
-            fNumber = 0;
-            sNumber = 0;
-            tbxMain.Clear();
-            tbxSecondary.Clear();
+            totalResult = 0;
+            tbxMain.Clear();            
             tbxDisplay.Clear();
         }
 
         private void btnEqual_Click(object sender, EventArgs e)
         {
-            decimal num1 = Convert.ToDecimal(tbxSecondary.Text);
-            decimal num2 = Convert.ToDecimal(tbxMain.Text);
 
-            tbxSecondary.Text = Convert.ToString(getResult(num1, opeRator, num2));
+            tbxMain.Text = Convert.ToString(getResult(totalResult, opeRator, Convert.ToDecimal(tbxMain.Text)));
+
+            totalResult = Convert.ToDecimal(tbxMain.Text);
+            
         }
     }
 }
